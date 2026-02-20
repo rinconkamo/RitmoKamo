@@ -37,8 +37,8 @@
         .step-title { font-weight: bold; margin-bottom: 8px; border-bottom: 2px solid #a5d6a7; font-size: 0.75rem; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
 
         .controls { display: flex; gap: 8px; width: 100%; }
-        .btn-stop { background-color: #ef5350; color: white; border: none; border-radius: 8px; padding: 12px; font-weight: bold; cursor: pointer; flex: 1; }
-        .btn-play { background-color: #2e7d32; color: white; width: 100%; margin-top: 10px; border: none; border-radius: 8px; padding: 12px; font-weight: bold; cursor: pointer; }
+        .btn-stop { background-color: #ef5350; color: white; border: none; border-radius: 8px; padding: 12px; font-weight: bold; cursor: pointer; flex: 1; text-transform: uppercase; }
+        .btn-play { background-color: #2e7d32; color: white; width: 100%; margin-top: 10px; border: none; border-radius: 8px; padding: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
         .bpm-slider-container { width: 100%; margin-top: 15px; display: flex; align-items: center; gap: 15px; }
         input[type=range] { flex: 1; cursor: pointer; accent-color: var(--text-dark); }
@@ -91,7 +91,7 @@
     <div class="card">
         <div class="step-title">1. Pulso (BPM: <span id="bpm-val">80</span>)</div>
         <div class="controls">
-            <button class="btn-stop" onclick="detenerTodo()">Parar Todo</button>
+            <button class="btn-stop" onclick="detenerTodo()">STOP</button>
         </div>
         <div class="bpm-slider-container">
             <span>40</span>
@@ -117,14 +117,14 @@
             </label>
         </div>
         <select id="sel" onchange="render(this.value)"></select>
-        <button class="btn-play" id="btn-play-ex" onclick="reproducirEjercicio()">ESCUCHAR CON VIBRACIÓN</button>
+        <button class="btn-play" id="btn-play-ex" onclick="reproducirEjercicio()">PLAY</button>
     </div>
 
     <div class="card">
         <div id="info" style="text-align: center; font-weight: bold; margin-bottom: 10px; color: var(--text-dark);"></div>
         
         <div class="pre-roll-area" id="pre-roll-container">
-            <div class="pre-roll-label">PREPARACIÓN (HÁPTICO)</div>
+            <div class="pre-roll-label">PREPARACIÓN</div>
             <div class="compas" style="border-bottom-color: #81c784; max-width: 250px; margin: 0 auto; background: none;">
                 <div class="tiempo-slot"><div class="marca-num pr-beat">1</div></div>
                 <div class="tiempo-slot"><div class="marca-num pr-beat">2</div></div>
@@ -183,7 +183,6 @@
             addEx(i, "Mixtos", m);
         }
 
-        // --- FUNCIONES DE FEEDBACK ---
         function vibrar(ms) {
             if ("vibrate" in navigator) {
                 navigator.vibrate(ms);
@@ -229,7 +228,6 @@
             const beatDur = 60/bpm;
             const startTime = audioCtx.currentTime + 0.1;
 
-            // --- 1. CUENTA INICIAL CON VIBRACIÓN ---
             const prBeats = document.querySelectorAll('.pr-beat');
             for(let p = 0; p < 4; p++) {
                 let timePre = startTime + (p * beatDur);
@@ -237,12 +235,11 @@
                 let timeout = setTimeout(() => {
                     document.querySelectorAll('.marca-num').forEach(m => m.classList.remove('active-beat'));
                     prBeats[p].classList.add('active-beat');
-                    vibrar(p === 0 ? 50 : 25); // VIBRAR
+                    vibrar(p === 0 ? 50 : 25);
                 }, (timePre - audioCtx.currentTime) * 1000);
                 visualTimeouts.push(timeout);
             }
 
-            // --- 2. EJERCICIO CON VIBRACIÓN ---
             const exerciseStart = startTime + (4 * beatDur);
             for(let i = 0; i < 16; i++) {
                 let timeBeat = exerciseStart + (i * beatDur);
@@ -251,7 +248,7 @@
                     document.querySelectorAll('.marca-num').forEach(m => m.classList.remove('active-beat'));
                     const mainBeats = document.querySelectorAll('#tab .marca-num');
                     if(mainBeats[i]) mainBeats[i].classList.add('active-beat');
-                    vibrar(i % 4 === 0 ? 50 : 25); // VIBRAR
+                    vibrar(i % 4 === 0 ? 50 : 25);
                 }, (timeBeat - audioCtx.currentTime) * 1000);
                 visualTimeouts.push(timeout);
 
