@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RitmoKamo - Final Pro</title>
+    <title>RitmoKamo - KamoRitmo</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -31,85 +31,65 @@
             width: 95%; max-width: 500px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin-bottom: 10px;
+            position: relative;
         }
 
-        .step-title { font-weight: bold; margin-bottom: 8px; border-bottom: 2px solid #a5d6a7; font-size: 0.75rem; text-transform: uppercase; }
+        .step-title { font-weight: bold; margin-bottom: 8px; border-bottom: 2px solid #a5d6a7; font-size: 0.75rem; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Metrónomo */
-        .controls { display: flex; gap: 8px; }
-        button {
-            border: none; border-radius: 8px; padding: 12px; font-weight: bold;
-            cursor: pointer; flex: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 0.9rem;
-        }
-        .btn-met { background-color: #81c784; color: white; }
-        .btn-stop { background-color: #ef5350; color: white; }
+        .controls { display: flex; gap: 8px; width: 100%; }
+        .btn-stop { background-color: #ef5350; color: white; border: none; border-radius: 8px; padding: 12px; font-weight: bold; cursor: pointer; flex: 1; }
+        .btn-play { background-color: #2e7d32; color: white; width: 100%; margin-top: 10px; border: none; border-radius: 8px; padding: 12px; font-weight: bold; cursor: pointer; }
+
+        .bpm-slider-container { width: 100%; margin-top: 15px; display: flex; align-items: center; gap: 15px; }
+        input[type=range] { flex: 1; cursor: pointer; accent-color: var(--text-dark); }
 
         select {
             width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #81c784;
             font-family: 'Montserrat'; font-weight: bold; color: var(--text-dark);
         }
 
-        /* Referencia */
-        .identificacion { display: flex; justify-content: space-around; padding: 5px 0; }
+        /* Referencia - Tamaño aumentado 55px */
+        .identificacion { display: flex; justify-content: space-around; padding: 10px 0; }
         .circ-id { 
-            width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 5px; 
+            width: 55px; height: 55px; border-radius: 50%; margin: 0 auto 5px; 
             display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; font-size: 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-weight: bold; font-size: 0.9rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer; transition: transform 0.1s;
         }
         .red { background-color: var(--blue-redonda); color: white; }
         .bla { background-color: var(--white-blanca); color: #333; border: 2px solid #2c3e50; }
         .neg { background-color: var(--black-negra); color: white; }
 
-        /* EJERCICIOS: Sistema de Rejilla para Alineación Central */
-        .ejercicio-grid { 
-            display: grid; grid-template-columns: 1fr 1fr; 
-            gap: 30px 15px; margin-top: 15px; 
+        /* PRE-ROLL Estilo */
+        .pre-roll-area {
+            margin-bottom: 20px;
+            border: 2px dashed #81c784;
+            border-radius: 10px;
+            padding: 10px;
+            background: rgba(129, 199, 132, 0.1);
         }
+        .pre-roll-label { font-size: 0.6rem; text-align: center; color: var(--text-dark); font-weight: bold; margin-bottom: 5px; }
 
+        /* EJERCICIOS */
+        .ejercicio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 15px; }
         .compas {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 Columnas iguales */
-            height: 90px;
-            border-bottom: 4px solid #2e7d32;
-            background: #fff;
-            border-radius: 5px 5px 0 0;
-            padding: 0 5px;
+            display: grid; grid-template-columns: repeat(4, 1fr); height: 90px;
+            border-bottom: 4px solid #2e7d32; background: #fff; border-radius: 5px 5px 0 0; padding: 0 5px; position: relative;
         }
+        .tiempo-slot { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; position: relative; padding-bottom: 5px; }
+        .marca-num { font-weight: bold; font-size: 1rem; color: #2e7d32; display: flex; flex-direction: column; align-items: center; }
+        .marca-num::before { content: ""; width: 2px; height: 8px; background: #2e7d32; margin-bottom: 4px; }
+        
+        /* Luz de Metrónomo */
+        .active-beat { color: #ef5350; transform: scale(1.3); transition: 0.05s; }
+        .active-beat::before { background: #ef5350; }
 
-        .tiempo-slot {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            position: relative;
-            padding-bottom: 5px;
-        }
+        .fig { position: absolute; top: 10px; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-        .marca-num {
-            font-weight: bold; font-size: 1rem; color: #2e7d32;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .marca-num::before {
-            content: ""; width: 2px; height: 8px; background: #2e7d32; margin-bottom: 4px;
-        }
+        .check-container { font-size: 0.7rem; display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--text-dark); }
+        .done-stamp { position: absolute; top: 5px; right: 5px; background: #ffd700; color: #5d4037; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.5rem; transform: rotate(10deg); border: 1px solid #bc9109; z-index: 5; }
 
-        /* Notas Mini */
-        .fig {
-            position: absolute;
-            top: 10px;
-            width: 24px; height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        /* DEDICATORIA SUTIL */
-        .dedication {
-            margin-top: 20px; margin-bottom: 10px;
-            font-size: 0.7rem; color: var(--text-subtle);
-            text-align: center; font-style: italic; opacity: 0.8;
-        }
+        .dedication { margin-top: 20px; margin-bottom: 10px; font-size: 0.7rem; color: var(--text-subtle); text-align: center; font-style: italic; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -117,12 +97,14 @@
     <h1>RitmoKamo</h1>
 
     <div class="card">
-        <div class="step-title">1. Pulso (BPM)</div>
+        <div class="step-title">1. Pulso (BPM: <span id="bpm-val">80</span>)</div>
         <div class="controls">
-            <button class="btn-met" onclick="setBPM(60)">60</button>
-            <button class="btn-met" onclick="setBPM(80)">80</button>
-            <button class="btn-met" onclick="setBPM(100)">100</button>
-            <button class="btn-stop" onclick="detener()">Parar</button>
+            <button class="btn-stop" onclick="detenerTodo()">Parar Todo</button>
+        </div>
+        <div class="bpm-slider-container">
+            <span>40</span>
+            <input type="range" id="bpm-slider" min="40" max="200" value="80" oninput="actualizarBPM(this.value)">
+            <span>200</span>
         </div>
     </div>
 
@@ -136,12 +118,29 @@
     </div>
 
     <div class="card">
-        <div class="step-title">3. Ejercicios (1-50)</div>
+        <div class="step-title">
+            3. Ejercicios (1-50)
+            <label class="check-container">
+                <input type="checkbox" id="check-done" onclick="toggleCompletado()"> ¡Logrado!
+            </label>
+        </div>
         <select id="sel" onchange="render(this.value)"></select>
+        <button class="btn-play" id="btn-play-ex" onclick="reproducirEjercicio()">ESCUCHAR CON CUENTA INICIAL</button>
     </div>
 
     <div class="card">
         <div id="info" style="text-align: center; font-weight: bold; margin-bottom: 10px; color: var(--text-dark);"></div>
+        
+        <div class="pre-roll-area" id="pre-roll-container">
+            <div class="pre-roll-label">PREPARACIÓN (PRE-ROLL)</div>
+            <div class="compas" style="border-bottom-color: #81c784; max-width: 250px; margin: 0 auto; background: none;">
+                <div class="tiempo-slot"><div class="marca-num pr-beat">1</div></div>
+                <div class="tiempo-slot"><div class="marca-num pr-beat">2</div></div>
+                <div class="tiempo-slot"><div class="marca-num pr-beat">3</div></div>
+                <div class="tiempo-slot"><div class="marca-num pr-beat">4</div></div>
+            </div>
+        </div>
+
         <div class="ejercicio-grid" id="tab"></div>
     </div>
 
@@ -150,13 +149,15 @@
     </div>
 
     <script>
-        let audioCtx, interval, bpm = 80;
+        let audioCtx, bpm = 80;
+        let visualTimeouts = [];
+        let scheduledNodes = [];
+        let completados = JSON.parse(localStorage.getItem('ritmoKamoProgreso')) || [];
 
-        // --- TU BASE DE DATOS EXACTA (RECUPERADA) ---
         const db = [];
         function addEx(id, cat, data) { db.push({ id, cat, data }); }
 
-        // REDONDAS (1-10)
+        // --- TU BASE DE DATOS ORIGINAL ---
         addEx(1, "Redondas", [{t:0, f:'red'}]); 
         addEx(2, "Redondas", [{t:4, f:'red'}]); 
         addEx(3, "Redondas", [{t:8, f:'red'}]); 
@@ -166,28 +167,22 @@
         addEx(7, "Redondas", [{t:2, f:'red'}, {t:12, f:'red'}]); 
         addEx(8, "Redondas", [{t:3, f:'red'}]); 
         addEx(9, "Redondas", [{t:4, f:'red'}, {t:11, f:'red'}]); 
-        addEx(10, "Redondas", [{t:0, f:'red'}, {t:5, f:'red'}, {t:10, f:'red'}].slice(0,2)); 
+        addEx(10, "Redondas", [{t:0, f:'red'}, {t:5, f:'red'}]); 
 
-        // BLANCAS (11-20)
-        addEx(11, "Blancas", [{t:0, f:'bla'}, {t:2, f:'bla'}]);
-        addEx(12, "Blancas", [{t:4, f:'bla'}, {t:6, f:'bla'}]);
-        addEx(13, "Blancas", [{t:1, f:'bla'}, {t:3, f:'bla'}]);
-        addEx(14, "Blancas", [{t:0, f:'bla'}, {t:3, f:'bla'}]);
-        addEx(15, "Blancas", [{t:8, f:'bla'}, {t:10, f:'bla'}]);
-        addEx(16, "Blancas", [{t:12, f:'bla'}, {t:14, f:'bla'}]);
-        addEx(17, "Blancas", [{t:0, f:'bla'}, {t:4, f:'bla'}, {t:8, f:'bla'}]);
-        addEx(18, "Blancas", [{t:2, f:'bla'}, {t:6, f:'bla'}, {t:10, f:'bla'}]);
-        addEx(19, "Blancas", [{t:1, f:'bla'}, {t:5, f:'bla'}, {t:9, f:'bla'}]);
-        addEx(20, "Blancas", [{t:0, f:'bla'}, {t:7, f:'bla'}, {t:14, f:'bla'}]);
+        for(let i=11; i<=20; i++) {
+            const data = [
+                [{t:0, f:'bla'}, {t:2, f:'bla'}],[{t:4, f:'bla'}, {t:6, f:'bla'}],[{t:1, f:'bla'}, {t:3, f:'bla'}],
+                [{t:0, f:'bla'}, {t:3, f:'bla'}],[{t:8, f:'bla'}, {t:10, f:'bla'}],[{t:12, f:'bla'}, {t:14, f:'bla'}],
+                [{t:0, f:'bla'}, {t:4, f:'bla'}, {t:8, f:'bla'}],[{t:2, f:'bla'}, {t:6, f:'bla'}, {t:10, f:'bla'}],
+                [{t:1, f:'bla'}, {t:5, f:'bla'}, {t:9, f:'bla'}],[{t:0, f:'bla'}, {t:7, f:'bla'}, {t:14, f:'bla'}]
+            ]; addEx(i, "Blancas", data[i-11]);
+        }
 
-        // NEGRAS (21-30)
         for(let i=21; i<=30; i++) {
-            let n = [];
-            for(let j=0; j<16; j++) if((j+i)%3==0) n.push({t:j, f:'neg'});
+            let n = []; for(let j=0; j<16; j++) if((j+i)%3==0) n.push({t:j, f:'neg'});
             addEx(i, "Negras", n);
         }
 
-        // MIXTOS (31-50)
         for(let i=31; i<=50; i++) {
             let m = [];
             if(i%3==0) m = [{t:0, f:'red'}, {t:4, f:'bla'}, {t:6, f:'neg'}, {t:7, f:'neg'}, {t:10, f:'bla'}];
@@ -196,58 +191,106 @@
             addEx(i, "Mixtos", m);
         }
 
-        // --- MOTORES DE AUDIO ---
         function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
 
-        function sonar(mult, freq) {
-            initAudio(); let dur = (60/bpm)*mult;
+        function actualizarBPM(v) {
+            bpm = v; document.getElementById('bpm-val').innerText = v;
+        }
+
+        function clickMetronomo(time, isDownbeat) {
             let osc = audioCtx.createOscillator(); let g = audioCtx.createGain();
             osc.connect(g); g.connect(audioCtx.destination);
-            osc.frequency.value = freq; g.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-            osc.start(); osc.stop(audioCtx.currentTime + dur);
+            osc.frequency.setValueAtTime(isDownbeat ? 1500 : 1000, time);
+            g.gain.setValueAtTime(0.2, time); g.gain.exponentialRampToValueAtTime(0.001, time + 0.03);
+            osc.start(time); osc.stop(time + 0.03);
+            scheduledNodes.push(osc);
         }
 
-        function setBPM(b) {
-            bpm = b; detener();
-            interval = setInterval(() => {
-                initAudio(); let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
-                o.connect(g); g.connect(audioCtx.destination); o.frequency.value = 666;
-                g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-                o.start(); o.stop(audioCtx.currentTime + 0.05);
-            }, (60/bpm)*1000);
+        function sonar(mult, freq, time = 0) {
+            initAudio(); let dur = (60/bpm)*mult; let st = time || audioCtx.currentTime;
+            let osc = audioCtx.createOscillator(); let g = audioCtx.createGain();
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.frequency.value = freq; g.gain.setValueAtTime(0, st);
+            g.gain.linearRampToValueAtTime(0.3, st + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.001, st + dur);
+            osc.start(st); osc.stop(st + dur);
+            scheduledNodes.push(osc);
         }
 
-        function detener() { clearInterval(interval); }
+        function detenerTodo() {
+            visualTimeouts.forEach(t => clearTimeout(t)); visualTimeouts = [];
+            scheduledNodes.forEach(n => { try { n.stop(); } catch(e) {} }); scheduledNodes = [];
+            document.querySelectorAll('.marca-num').forEach(m => m.classList.remove('active-beat'));
+        }
 
-        // --- RENDERIZADO CON GRID SYSTEM ---
+        function reproducirEjercicio() {
+            detenerTodo(); initAudio();
+            const id = document.getElementById('sel').value;
+            const ex = db.find(e => e.id == id);
+            const beatDur = 60/bpm;
+            const startTime = audioCtx.currentTime + 0.1;
+
+            // --- 1. CUENTA INICIAL (Línea de arriba) ---
+            const prBeats = document.querySelectorAll('.pr-beat');
+            for(let p = 0; p < 4; p++) {
+                let timePre = startTime + (p * beatDur);
+                clickMetronomo(timePre, p === 0);
+                let timeout = setTimeout(() => {
+                    document.querySelectorAll('.marca-num').forEach(m => m.classList.remove('active-beat'));
+                    prBeats[p].classList.add('active-beat');
+                }, (timePre - audioCtx.currentTime) * 1000);
+                visualTimeouts.push(timeout);
+            }
+
+            // --- 2. EJERCICIO (Grid de abajo) ---
+            const exerciseStart = startTime + (4 * beatDur);
+            for(let i = 0; i < 16; i++) {
+                let timeBeat = exerciseStart + (i * beatDur);
+                clickMetronomo(timeBeat, i % 4 === 0);
+                let timeout = setTimeout(() => {
+                    document.querySelectorAll('.marca-num').forEach(m => m.classList.remove('active-beat'));
+                    const mainBeats = document.querySelectorAll('#tab .marca-num');
+                    if(mainBeats[i]) mainBeats[i].classList.add('active-beat');
+                }, (timeBeat - audioCtx.currentTime) * 1000);
+                visualTimeouts.push(timeout);
+
+                let nota = ex.data.find(n => n.t === i);
+                if(nota) {
+                    let freq = nota.f==='red'?440:(nota.f==='bla'?523:659);
+                    let mult = nota.f==='red'?4:(nota.f==='bla'?2:1);
+                    sonar(mult, freq, timeBeat);
+                }
+            }
+        }
+
+        function toggleCompletado() {
+            let id = parseInt(document.getElementById('sel').value);
+            if(completados.includes(id)) completados = completados.filter(i => i !== id);
+            else completados.push(id);
+            localStorage.setItem('ritmoKamoProgreso', JSON.stringify(completados));
+            render(id);
+        }
+
         function render(id) {
             const ex = db.find(e => e.id == id);
             const tab = document.getElementById('tab');
             document.getElementById('info').innerText = `${ex.cat} - Desafío ${ex.id}`;
+            document.getElementById('check-done').checked = completados.includes(parseInt(id));
             tab.innerHTML = '';
 
             for(let c=0; c<4; c++) {
                 const comp = document.createElement('div'); comp.className = 'compas';
+                if(completados.includes(parseInt(id))) comp.innerHTML += `<div class="done-stamp">LOGRADO</div>`;
                 for(let t=0; t<4; t++) {
                     const slot = document.createElement('div'); slot.className = 'tiempo-slot';
-                    
-                    const marca = document.createElement('div');
-                    marca.className = 'marca-num'; marca.innerText = t + 1;
+                    const marca = document.createElement('div'); marca.className = 'marca-num'; marca.innerText = t + 1;
                     slot.appendChild(marca);
-
                     const tiempoAbsoluto = (c * 4) + t;
                     const figura = ex.data.find(f => f.t === tiempoAbsoluto);
-                    
                     if(figura) {
-                        const figEl = document.createElement('div');
-                        figEl.className = `fig ${figura.f}`;
+                        const figEl = document.createElement('div'); figEl.className = `fig ${figura.f}`;
                         if(figura.f === 'bla') figEl.style.border = "2px solid #2c3e50";
-                        figEl.onclick = () => {
-                            let fr = figura.f==='red'?440:(figura.f==='bla'?523:659);
-                            let m = figura.f==='red'?4:(figura.f==='bla'?2:1);
-                            sonar(m, fr);
-                        };
+                        figEl.onclick = () => sonar(figura.f==='red'?4:(figura.f==='bla'?2:1), figura.f==='red'?440:(figura.f==='bla'?523:659));
                         slot.appendChild(figEl);
                     }
                     comp.appendChild(slot);
