@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RitmoKamo - Final Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            --blue-redonda: #3498db;
+            --white-blanca: #ffffff;
+            --black-negra: #2c3e50;
+            --text-dark: #1b5e20;
+            --text-subtle: #4a7a4d;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh; margin: 0; padding: 10px;
+            display: flex; flex-direction: column; align-items: center; color: #2e7d32;
+        }
+
+        h1 { margin: 5px 0; font-size: 1.8rem; color: var(--text-dark); text-transform: uppercase; letter-spacing: 2px; }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px; padding: 15px;
+            width: 95%; max-width: 500px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .step-title { font-weight: bold; margin-bottom: 8px; border-bottom: 2px solid #a5d6a7; font-size: 0.75rem; text-transform: uppercase; }
+
+        /* Metrónomo */
+        .controls { display: flex; gap: 8px; }
+        button {
+            border: none; border-radius: 8px; padding: 12px; font-weight: bold;
+            cursor: pointer; flex: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 0.9rem;
+        }
+        .btn-met { background-color: #81c784; color: white; }
+        .btn-stop { background-color: #ef5350; color: white; }
+
+        select {
+            width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #81c784;
+            font-family: 'Montserrat'; font-weight: bold; color: var(--text-dark);
+        }
+
+        /* Referencia */
+        .identificacion { display: flex; justify-content: space-around; padding: 5px 0; }
+        .circ-id { 
+            width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 5px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; font-size: 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .red { background-color: var(--blue-redonda); color: white; }
+        .bla { background-color: var(--white-blanca); color: #333; border: 2px solid #2c3e50; }
+        .neg { background-color: var(--black-negra); color: white; }
+
+        /* EJERCICIOS: Sistema de Rejilla para Alineación Central */
+        .ejercicio-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; 
+            gap: 30px 15px; margin-top: 15px; 
+        }
+
+        .compas {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 Columnas iguales */
+            height: 90px;
+            border-bottom: 4px solid #2e7d32;
+            background: #fff;
+            border-radius: 5px 5px 0 0;
+            padding: 0 5px;
+        }
+
+        .tiempo-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            position: relative;
+            padding-bottom: 5px;
+        }
+
+        .marca-num {
+            font-weight: bold; font-size: 1rem; color: #2e7d32;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .marca-num::before {
+            content: ""; width: 2px; height: 8px; background: #2e7d32; margin-bottom: 4px;
+        }
+
+        /* Notas Mini */
+        .fig {
+            position: absolute;
+            top: 10px;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* DEDICATORIA SUTIL */
+        .dedication {
+            margin-top: 20px; margin-bottom: 10px;
+            font-size: 0.7rem; color: var(--text-subtle);
+            text-align: center; font-style: italic; opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>RitmoKamo</h1>
+
+    <div class="card">
+        <div class="step-title">1. Pulso (BPM)</div>
+        <div class="controls">
+            <button class="btn-met" onclick="setBPM(60)">60</button>
+            <button class="btn-met" onclick="setBPM(80)">80</button>
+            <button class="btn-met" onclick="setBPM(100)">100</button>
+            <button class="btn-stop" onclick="detener()">Parar</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="step-title">2. Relación Sonido - Figura</div>
+        <div class="identificacion">
+            <div onclick="sonar(4, 440)"><div class="circ-id red">4T</div></div>
+            <div onclick="sonar(2, 523)"><div class="circ-id bla">2T</div></div>
+            <div onclick="sonar(1, 659)"><div class="circ-id neg">1T</div></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="step-title">3. Ejercicios (1-50)</div>
+        <select id="sel" onchange="render(this.value)"></select>
+    </div>
+
+    <div class="card">
+        <div id="info" style="text-align: center; font-weight: bold; margin-bottom: 10px; color: var(--text-dark);"></div>
+        <div class="ejercicio-grid" id="tab"></div>
+    </div>
+
+    <div class="dedication">
+        por Kamo Rincon para mi amigo Mancho Ruiz. feb/2026
+    </div>
+
+    <script>
+        let audioCtx, interval, bpm = 80;
+
+        // --- TU BASE DE DATOS EXACTA (RECUPERADA) ---
+        const db = [];
+        function addEx(id, cat, data) { db.push({ id, cat, data }); }
+
+        // REDONDAS (1-10)
+        addEx(1, "Redondas", [{t:0, f:'red'}]); 
+        addEx(2, "Redondas", [{t:4, f:'red'}]); 
+        addEx(3, "Redondas", [{t:8, f:'red'}]); 
+        addEx(4, "Redondas", [{t:12, f:'red'}]); 
+        addEx(5, "Redondas", [{t:0, f:'red'}, {t:8, f:'red'}]); 
+        addEx(6, "Redondas", [{t:1, f:'red'}, {t:10, f:'red'}]); 
+        addEx(7, "Redondas", [{t:2, f:'red'}, {t:12, f:'red'}]); 
+        addEx(8, "Redondas", [{t:3, f:'red'}]); 
+        addEx(9, "Redondas", [{t:4, f:'red'}, {t:11, f:'red'}]); 
+        addEx(10, "Redondas", [{t:0, f:'red'}, {t:5, f:'red'}, {t:10, f:'red'}].slice(0,2)); 
+
+        // BLANCAS (11-20)
+        addEx(11, "Blancas", [{t:0, f:'bla'}, {t:2, f:'bla'}]);
+        addEx(12, "Blancas", [{t:4, f:'bla'}, {t:6, f:'bla'}]);
+        addEx(13, "Blancas", [{t:1, f:'bla'}, {t:3, f:'bla'}]);
+        addEx(14, "Blancas", [{t:0, f:'bla'}, {t:3, f:'bla'}]);
+        addEx(15, "Blancas", [{t:8, f:'bla'}, {t:10, f:'bla'}]);
+        addEx(16, "Blancas", [{t:12, f:'bla'}, {t:14, f:'bla'}]);
+        addEx(17, "Blancas", [{t:0, f:'bla'}, {t:4, f:'bla'}, {t:8, f:'bla'}]);
+        addEx(18, "Blancas", [{t:2, f:'bla'}, {t:6, f:'bla'}, {t:10, f:'bla'}]);
+        addEx(19, "Blancas", [{t:1, f:'bla'}, {t:5, f:'bla'}, {t:9, f:'bla'}]);
+        addEx(20, "Blancas", [{t:0, f:'bla'}, {t:7, f:'bla'}, {t:14, f:'bla'}]);
+
+        // NEGRAS (21-30)
+        for(let i=21; i<=30; i++) {
+            let n = [];
+            for(let j=0; j<16; j++) if((j+i)%3==0) n.push({t:j, f:'neg'});
+            addEx(i, "Negras", n);
+        }
+
+        // MIXTOS (31-50)
+        for(let i=31; i<=50; i++) {
+            let m = [];
+            if(i%3==0) m = [{t:0, f:'red'}, {t:4, f:'bla'}, {t:6, f:'neg'}, {t:7, f:'neg'}, {t:10, f:'bla'}];
+            else if(i%3==1) m = [{t:1, f:'bla'}, {t:4, f:'red'}, {t:9, f:'neg'}, {t:11, f:'bla'}];
+            else m = [{t:0, f:'neg'}, {t:1, f:'neg'}, {t:2, f:'bla'}, {t:5, f:'red'}, {t:10, f:'bla'}];
+            addEx(i, "Mixtos", m);
+        }
+
+        // --- MOTORES DE AUDIO ---
+        function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+
+        function sonar(mult, freq) {
+            initAudio(); let dur = (60/bpm)*mult;
+            let osc = audioCtx.createOscillator(); let g = audioCtx.createGain();
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.frequency.value = freq; g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+            osc.start(); osc.stop(audioCtx.currentTime + dur);
+        }
+
+        function setBPM(b) {
+            bpm = b; detener();
+            interval = setInterval(() => {
+                initAudio(); let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
+                o.connect(g); g.connect(audioCtx.destination); o.frequency.value = 666;
+                g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                o.start(); o.stop(audioCtx.currentTime + 0.05);
+            }, (60/bpm)*1000);
+        }
+
+        function detener() { clearInterval(interval); }
+
+        // --- RENDERIZADO CON GRID SYSTEM ---
+        function render(id) {
+            const ex = db.find(e => e.id == id);
+            const tab = document.getElementById('tab');
+            document.getElementById('info').innerText = `${ex.cat} - Desafío ${ex.id}`;
+            tab.innerHTML = '';
+
+            for(let c=0; c<4; c++) {
+                const comp = document.createElement('div'); comp.className = 'compas';
+                for(let t=0; t<4; t++) {
+                    const slot = document.createElement('div'); slot.className = 'tiempo-slot';
+                    
+                    const marca = document.createElement('div');
+                    marca.className = 'marca-num'; marca.innerText = t + 1;
+                    slot.appendChild(marca);
+
+                    const tiempoAbsoluto = (c * 4) + t;
+                    const figura = ex.data.find(f => f.t === tiempoAbsoluto);
+                    
+                    if(figura) {
+                        const figEl = document.createElement('div');
+                        figEl.className = `fig ${figura.f}`;
+                        if(figura.f === 'bla') figEl.style.border = "2px solid #2c3e50";
+                        figEl.onclick = () => {
+                            let fr = figura.f==='red'?440:(figura.f==='bla'?523:659);
+                            let m = figura.f==='red'?4:(figura.f==='bla'?2:1);
+                            sonar(m, fr);
+                        };
+                        slot.appendChild(figEl);
+                    }
+                    comp.appendChild(slot);
+                }
+                tab.appendChild(comp);
+            }
+        }
+
+        const s = document.getElementById('sel');
+        db.forEach(ex => {
+            const o = document.createElement('option'); o.value = ex.id;
+            o.innerText = `Ej. ${ex.id} (${ex.cat})`; s.appendChild(o);
+        });
+        render(1);
+    </script>
+</body>
+</html>
